@@ -1,37 +1,16 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ES2020",
     "module": "commonjs",
-    "lib": ["ES2022"],
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
+    "lib": ["ES2020"],
     "moduleResolution": "node",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
     "rootDir": "src",
     "outDir": "dist",
-    "sourceMap": true,
-    "declaration": true,
     "resolveJsonModule": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "baseUrl": ".",
-    "paths": {
-      "zod": ["vendor/zod"],
-      "prom-client": ["vendor/prom-client"],
-      "telegraf": ["vendor/telegraf"],
-      "better-sqlite3": ["vendor/better-sqlite3"],
-      "node-fetch": ["vendor/node-fetch"],
-      "*": ["./node_modules/*"]
-    },
-    "typeRoots": [
-      "./vendor",
-      "./node_modules/@types"
-    ]
+    "strict": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["dist", "node_modules"]
+  "include": ["src"]
 }
