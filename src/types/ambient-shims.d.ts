@@ -1,0 +1,12 @@
+declare module "better-sqlite3";
+declare module "prom-client";
+declare module "telegraf";
+declare module "fs";
+declare module "path";
+declare module "crypto";
+declare module "os";
+declare module "http";
+declare module "keytar";
+declare var process: any;
+declare var require: any;
+declare var Buffer: any;

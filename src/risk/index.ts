@@ -1,25 +1,5 @@
 import { loadConfig } from "../config";
-
-export type RiskCheckInput = {
-  equity: number; mint: string; estLiquidityUsd: number;
-  desiredSize: number; slippageBps: number; computeUnitPrice: number;
-  flags?: { hasFreeze?: boolean; hasMintAuth?: boolean };
-};
-
-export function maxPositionSize(equity: number) {
-  const { MAX_POS_PCT } = loadConfig();
-  return Math.max(0, equity * MAX_POS_PCT);
-}
-export function allowedSize(equity: number, desired: number) {
-  const { MAX_RISK_PCT } = loadConfig();
-  const cap = Math.min(maxPositionSize(equity), equity * MAX_RISK_PCT);
-  return Math.min(cap, desired);
-}
-export function basicSafetyChecks(i: RiskCheckInput): { ok: boolean; reason?: string } {
-  if (i.estLiquidityUsd < 5000) return { ok: false, reason: "low-liquidity" };
-  if ((i.flags?.hasFreeze || i.flags?.hasMintAuth) === true) return { ok: false, reason: "mint-authority-risk" };
-  const { SLIPPAGE_BPS, MAX_CU_PRICE } = loadConfig();
-  if (i.slippageBps > SLIPPAGE_BPS) return { ok: false, reason: "slippage-too-high" };
-  if (i.computeUnitPrice > MAX_CU_PRICE) return { ok: false, reason: "priority-fee-too-high" };
-  return { ok: true };
-}
+export type RiskCheckInput = { equity:number; mint:string; estLiquidityUsd:number; desiredSize:number; slippageBps:number; computeUnitPrice:number; flags?:{ hasFreeze?:boolean; hasMintAuth?:boolean } };
+export function maxPositionSize(equity:number){ const { MAX_POS_PCT } = loadConfig(); return Math.max(0, equity * MAX_POS_PCT); }
+export function allowedSize(equity:number, desired:number){ const { MAX_RISK_PCT } = loadConfig(); const cap=Math.min(maxPositionSize(equity), equity*MAX_RISK_PCT); return Math.min(cap, desired); }
+export function basicSafetyChecks(i:RiskCheckInput){ if (i.estLiquidityUsd<5000) return { ok:false, reason:"low-liquidity"}; if ((i.flags?.hasFreeze||i.flags?.hasMintAuth)) return { ok:false, reason:"mint-authority-risk"}; const {SLIPPAGE_BPS,MAX_CU_PRICE}=loadConfig(); if(i.slippageBps>SLIPPAGE_BPS) return { ok:false, reason:"slippage-too-high"}; if(i.computeUnitPrice>MAX_CU_PRICE) return { ok:false, reason:"priority-fee-too-high"}; return { ok:true }; }
