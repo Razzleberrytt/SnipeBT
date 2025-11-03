@@ -1,45 +1,37 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-  "module": "commonjs",
+    "module": "commonjs",
     "lib": ["ES2022"],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-  "moduleResolution": "node",
-    
+    "moduleResolution": "node",
     "rootDir": "src",
     "outDir": "dist",
     "sourceMap": true,
     "declaration": true,
     "resolveJsonModule": true,
-    "allowJs": true,
-    "checkJs": true,
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
+    "baseUrl": ".",
     "paths": {
-      "*": ["./node_modules/*", "./src/types/*"]
+      "zod": ["vendor/zod"],
+      "prom-client": ["vendor/prom-client"],
+      "telegraf": ["vendor/telegraf"],
+      "better-sqlite3": ["vendor/better-sqlite3"],
+      "node-fetch": ["vendor/node-fetch"],
+      "*": ["./node_modules/*"]
     },
     "typeRoots": [
-      "./node_modules/@types",
-      "./src/types"
+      "./vendor",
+      "./node_modules/@types"
     ]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.js",
-    "src/**/*.json"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.spec.ts",
-    "**/*.test.ts"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules"]
 }
