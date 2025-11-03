@@ -10,7 +10,9 @@
     "dev": "ts-node src/main.ts",
     "migrate": "echo no-migrations",
     "lint": "echo no-lint && exit 0",
-    "test": "echo no-tests && exit 0"
+    "test": "echo no-tests && exit 0",
+    "pack:tarballs": "node scripts/pack-tarballs.js",
+    "install:offline": "node scripts/install-offline.js"
   },
   "engines": {
     "node": ">=20 <21"
