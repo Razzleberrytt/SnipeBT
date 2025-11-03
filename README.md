@@ -20,6 +20,24 @@ npm run build
 The project uses SQLite for persistence. The database file is stored in `./data/snipebt.sqlite`
 by default and is created automatically.
 
+### Offline deployment workflow
+
+Some environments require promoting the build artifacts from an internet-connected workstation to
+an isolated runtime. Use the following sequence:
+
+1. **Online workstation**
+   1. `npm ci`
+   2. `npm run pack:tarballs`
+   3. Copy the repository to the offline host, ensuring `vendor/npm/*.tgz` is included
+2. **Offline host**
+   1. `npm run install:offline`
+   2. `npm run build`
+   3. Proceed with dry-run validation (`npm run start:dry`)
+
+The `pack:tarballs` script snapshots every installed dependency into `vendor/npm/` alongside a
+manifest. `install:offline` consumes that manifest to reconstruct `node_modules/` without reaching
+the public registry.
+
 ## Environment configuration
 
 Copy `.env.example` to the desired environment file (`.env.dev`, `.env.staging`, or `.env.prod`) and
@@ -74,6 +92,8 @@ Runtime mode is selected via CLI flags when invoking `dist/main.js` (used by npm
 | `npm run lint` | Run ESLint on source files |
 | `npm run test` | Run Jest unit tests |
 | `npm run health` | Execute health checks once |
+| `npm run pack:tarballs` | Generate offline tarballs for all dependencies |
+| `npm run install:offline` | Rehydrate `node_modules/` from `vendor/npm/*.tgz` |
 
 ## Risk guardrail overview
 
