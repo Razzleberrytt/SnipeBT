@@ -1,3 +1,4 @@
-- Implement real Jupiter swap building (serialize tx + priority fees)
-- RPC failover and circuit breaker
-- Live strategy loop (sniper stream, risk evaluation, execute BUY/SELL)
+- Implement real Jupiter swap building (serialized tx + priority fees)
+- RPC failover + circuit breaker (primary/backup switching, backoff, auto-pause)
+- Live strategy loop (stream, risk evaluation, BUY/SELL)
+- Replace JSON fallback with mandatory SQLite in production
