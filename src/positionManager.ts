@@ -1,10 +1,7 @@
 import { PublicKey, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import axios from 'axios';
-import fs from 'fs';
-import path from 'path';
-import { rpc, wallet } from './config';
-
-const ENTRY_PRICES_FILE = path.join(__dirname, '..', 'entryPrices.json');
+import { rpc, wallet } from './legacy/config';
+import { getEntryPriceForMint, setEntryPriceForMint } from './db';
 
 interface TradeResult {
   signature: string;
@@ -17,35 +14,13 @@ interface TradeResult {
   pnlPercent: number;
 }
 
-function loadEntryPrices(): Record<string, number> {
-  try {
-    if (fs.existsSync(ENTRY_PRICES_FILE)) {
-      return JSON.parse(fs.readFileSync(ENTRY_PRICES_FILE, 'utf8'));
-    }
-  } catch (e) {
-    console.error('Failed to load entry prices:', e);
-  }
-  return {};
-}
-
-function saveEntryPrices(prices: Record<string, number>) {
-  try {
-    fs.writeFileSync(ENTRY_PRICES_FILE, JSON.stringify(prices, null, 2));
-  } catch (e) {
-    console.error('Failed to save entry prices:', e);
-  }
-}
-
 export const setEntryPrice = (mint: string, price: number) => {
-  const prices = loadEntryPrices();
-  prices[mint] = price;
-  saveEntryPrices(prices);
+  setEntryPriceForMint(mint, price);
 };
 
 export const getEntryPrice = (mint: string): number | null => {
-  const prices = loadEntryPrices();
-  return prices[mint] || null;
-}
+  return getEntryPriceForMint(mint);
+};
 
 interface HeldPosition {
   mint: string;

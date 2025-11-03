@@ -4,7 +4,7 @@ import dns from 'dns';
 import { Raydium } from '@raydium-io/raydium-sdk-v2';
 import { PublicKey, VersionedTransaction, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { getMint } from '@solana/spl-token';
-import { rpc, wallet, CONSTANTS } from './config';
+import { rpc, wallet, CONSTANTS } from './legacy/config';
 import { estimateSolTransactionFee } from './utils';
 
 // Optional: nudge DNS servers; non-fatal if it fails

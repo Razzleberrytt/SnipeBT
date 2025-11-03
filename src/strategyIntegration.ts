@@ -9,7 +9,7 @@ import { executeSnipeSwap } from './trade';
 import { calculatePositionSize } from './utils';
 import { checkAndTakeProfit, getEntryPrice } from './positionManager';
 import { tradeNotifier } from './notifications';
-import { rpc, wallet } from './config';
+import { rpc, wallet } from './legacy/config';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import axios from 'axios';
 

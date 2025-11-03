@@ -1,4 +1,4 @@
-import { rpc, CONSTANTS, getConnectionHealth } from './config';
+import { rpc, CONSTANTS, getConnectionHealth } from './legacy/config';
 import { 
   LogsFilter,
   Commitment,

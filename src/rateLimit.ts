@@ -1,4 +1,4 @@
-import { CONSTANTS } from './config';
+import { CONSTANTS } from './legacy/config';
 
 export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 

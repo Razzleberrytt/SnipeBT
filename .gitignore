@@ -1,18 +1,37 @@
-# Environment variables
+# Dependencies
+node_modules/
+
+# Build output
+/dist/
+/build/
+
+# Environment files
 .env
 .env.*
-.env.local
-.env.*.local
+!.env.example
 
-# Node
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+# Secrets and keys
+*.key
+*.pem
+*.p12
+*.der
+*.crt
+*.cer
+*.jks
+*.keystore
+*.kdbx
 
-# Logs
-logs
+# Local data and artifacts
+/data/
+*.sqlite
+*.sqlite3
+*.db
+*.db3
+*.sqlite-wal
+*.sqlite-shm
+logs/
 *.log
+coverage/
 
 # Runtime data
 pids
@@ -20,19 +39,12 @@ pids
 *.seed
 *.pid.lock
 
-# Testing
-coverage/
-
-# Build output
-dist/
-build/
-
-# IDE
+# Editors and IDEs
 .idea/
 .vscode/
 *.swp
 *.swo
 
-# OS
+# OS files
 .DS_Store
 Thumbs.db

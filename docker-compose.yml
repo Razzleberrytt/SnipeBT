@@ -1,0 +1,32 @@
+version: '3.9'
+
+x-bot-base: &bot-base
+  build: .
+  image: snipebt:latest
+  restart: unless-stopped
+  ports:
+    - '9464:9464'
+  volumes:
+    - ./data:/app/data
+
+services:
+  bot-dev:
+    <<: *bot-base
+    profiles: ['dev']
+    env_file:
+      - .env.dev
+    command: ['node', 'dist/main.js', '--mode', 'dry']
+
+  bot-staging:
+    <<: *bot-base
+    profiles: ['staging']
+    env_file:
+      - .env.staging
+    command: ['node', 'dist/main.js', '--mode', 'staging']
+
+  bot-live:
+    <<: *bot-base
+    profiles: ['live']
+    env_file:
+      - .env.prod
+    command: ['node', 'dist/main.js', '--mode', 'live', '--live']

@@ -1,4 +1,4 @@
-import { rpc, wallet } from './config';
+import { rpc, wallet } from './legacy/config';
 import { LAMPORTS_PER_SOL, SystemProgram, TransactionMessage } from '@solana/web3.js';
 
 /**
