@@ -1,0 +1,3 @@
+- Implement real Jupiter swap building (serialize tx + priority fees)
+- RPC failover and circuit breaker
+- Live strategy loop (sniper stream, risk evaluation, execute BUY/SELL)

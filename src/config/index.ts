@@ -1,5 +1,5 @@
-import 'dotenv/config';
-import { EnvSchema, type AppEnv } from './env.schema';
+import "dotenv/config";
+import { EnvSchema, type AppEnv } from "./env.schema";
 
 let cached: AppEnv | null = null;
 
@@ -10,6 +10,6 @@ export function loadConfig(): AppEnv {
     console.error("Invalid environment:", parsed.error.format());
     process.exit(1);
   }
-  cached = parsed.data as AppEnv;
+  cached = parsed.data;
   return cached;
 }

@@ -9,7 +9,7 @@ export type TradeRow = {
   route: string | null; fee_lamports: number | null; created_at: number;
 };
 
-let db: Database.Database;
+let db: Database.Database | null = null;
 
 export function getDB() {
   if (db) return db;
