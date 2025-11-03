@@ -1,8 +1,11 @@
 #!/usr/bin/env ts-node
 import readline from 'readline';
+import { loadConfig } from './config';
 import { executeSnipeSwap } from './trade';
-import { initializeAndLog, rpc, wallet } from './config';
+import { initializeAndLog, rpc, wallet } from './legacy/config';
 import { estimateExpectedUpside } from './utils';
+
+loadConfig();
 
 const ARG = (name: string) => {
   const idx = process.argv.indexOf(name);

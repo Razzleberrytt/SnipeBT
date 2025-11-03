@@ -1,20 +1,17 @@
 // Enhanced secret store helper
-// Supports storing/listing/showing/deleting secrets in the OS credential store (keytar)
+// Supports storing/listing/showing/deleting secrets via the configured provider
 // and validates/normalizes Solana private keys when storing the wallet key.
 
-declare const require: any;
-let keytar: any;
-try {
-  keytar = require('keytar');
-} catch (e) {
-  keytar = null;
-}
 import readline from 'readline';
+import { loadConfig } from './config';
+import { createSecretsProvider } from './secrets/provider';
 import bs58 from 'bs58';
 import fs from 'fs';
 import path from 'path';
 
 const DEFAULT_SERVICE = 'snipebt';
+
+loadConfig();
 
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 const question = (q: string) => new Promise<string>(resolve => rl.question(q, resolve));
@@ -122,23 +119,19 @@ async function run() {
       process.exit(0);
     }
 
-    if (!keytar) {
-      console.error('keytar is not installed. Run `npm install keytar` and try again.');
-      process.exit(1);
-    }
-
     const service = flags.service || DEFAULT_SERVICE;
     const name = flags.name;
     const account = flags.account || name || 'default';
+    const secretsProvider = createSecretsProvider({ service });
 
     if (flags.list) {
-      const creds = await keytar.findCredentials(service);
-      if (!creds || creds.length === 0) {
+      const keys = await secretsProvider.listKeys();
+      if (!keys || keys.length === 0) {
         console.log('No credentials found for service:', service);
         process.exit(0);
       }
-      for (const c of creds) {
-        console.log(`${c.account}`);
+      for (const key of keys) {
+        console.log(key);
       }
       process.exit(0);
     }
@@ -150,7 +143,7 @@ async function run() {
     }
 
     if (flags.show) {
-      const v = await keytar.getPassword(service, account);
+      const v = await secretsProvider.getSecret(account);
       if (!v) {
         console.error('No secret found for', account);
         process.exit(1);
@@ -160,9 +153,17 @@ async function run() {
     }
 
     if (flags.delete) {
-      const ok = await keytar.deletePassword(service, account);
-      if (ok) console.log('Deleted secret for', account);
-      else console.log('No secret found to delete for', account);
+      try {
+        const deleted = await secretsProvider.deleteSecret(account);
+        if (deleted) {
+          console.log('Deleted secret for', account);
+        } else {
+          console.log('No secret found to delete for', account);
+        }
+      } catch (error) {
+        console.error('Unable to delete secret:', (error as Error).message);
+        process.exit(1);
+      }
       process.exit(0);
     }
 
@@ -204,7 +205,7 @@ async function run() {
       value = bs58.encode(parsed);
     }
 
-    await keytar.setPassword(service, account, value);
+    await secretsProvider.setSecret(account, value);
     console.log(`Stored secret '${name}' in service '${service}' under account '${account}'.`);
     console.log('Important: remove any plaintext copy from .env or filesystem if present.');
     process.exit(0);

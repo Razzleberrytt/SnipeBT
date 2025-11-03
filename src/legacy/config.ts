@@ -6,7 +6,7 @@ import {
   LAMPORTS_PER_SOL,
   ConnectionConfig
 } from '@solana/web3.js';
-import { secureConfig } from './secureConfig';
+import { secureConfig } from '../secureConfig';
 
 // Note: we intentionally avoid accessing secureConfig at module import time
 // because secureConfig.initialize() must run first (it loads .env and OS store).
