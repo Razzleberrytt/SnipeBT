@@ -2,41 +2,30 @@
 node_modules/
 
 # Build output
-/dist/
-/build/
+dist/
+build/
 
 # Environment files
 .env
 .env.*
 !.env.example
 
-# Secrets and keys
-*.key
-*.pem
-*.p12
-*.der
-*.crt
-*.cer
-*.jks
-*.keystore
-*.kdbx
-
-# Local data and artifacts
+# Local data and databases
 /data/
+/data/*.db
+/data/*.sqlite
 *.sqlite
 *.sqlite3
 *.db
 *.db3
 *.sqlite-wal
 *.sqlite-shm
+
+# Logs and runtime artifacts
 logs/
 *.log
-coverage/
-
-# Runtime data
 pids
 *.pid
-*.seed
 *.pid.lock
 
 # Editors and IDEs
@@ -45,6 +34,6 @@ pids
 *.swp
 *.swo
 
-# OS files
+# OS
 .DS_Store
 Thumbs.db

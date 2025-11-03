@@ -1,114 +1,49 @@
-import type Keytar from 'keytar';
-
-import { getConfig } from '../config';
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
 
 export interface SecretsProvider {
-  getSecret(key: string): Promise<string | null>;
-  setSecret(key: string, value: string): Promise<void>;
-  deleteSecret(key: string): Promise<boolean>;
-  listKeys(): Promise<string[]>;
+  get(key: string): Promise<string | null>;
+  set(key: string, value: string): Promise<void>;
 }
 
-class KeytarSecretsProvider implements SecretsProvider {
-  private keytarPromise: Promise<typeof Keytar>;
+function createFileProvider(baseDir: string): SecretsProvider {
+  const dir = path.resolve(baseDir);
+  const file = path.join(dir, "secrets.enc.json");
+  const key = crypto.createHash('sha256').update(require('os').hostname()).digest(); // dev-only
+  const iv = Buffer.alloc(16, 0);
 
-  constructor(private readonly service: string, private readonly defaultAccount?: string) {
-    this.keytarPromise = import('keytar');
+  function readStore(): Record<string,string> {
+    if (!fs.existsSync(file)) return {};
+    const data = fs.readFileSync(file);
+    const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+    const json = Buffer.concat([decipher.update(data), decipher.final()]).toString("utf8");
+    return JSON.parse(json);
+  }
+  function writeStore(obj: Record<string,string>) {
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    const json = Buffer.from(JSON.stringify(obj));
+    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
+    const enc = Buffer.concat([cipher.update(json), cipher.final()]);
+    fs.writeFileSync(file, enc);
   }
 
-  private buildAccount(key: string): string {
-    return this.defaultAccount ? `${this.defaultAccount}:${key}` : key;
-  }
-
-  async getSecret(key: string): Promise<string | null> {
-    const keytar = await this.keytarPromise;
-    return keytar.getPassword(this.service, this.buildAccount(key));
-  }
-
-  async setSecret(key: string, value: string): Promise<void> {
-    const keytar = await this.keytarPromise;
-    await keytar.setPassword(this.service, this.buildAccount(key), value);
-  }
-
-  async deleteSecret(key: string): Promise<boolean> {
-    const keytar = await this.keytarPromise;
-    return keytar.deletePassword(this.service, this.buildAccount(key));
-  }
-
-  async listKeys(): Promise<string[]> {
-    const keytar = await this.keytarPromise;
-    const credentials = await keytar.findCredentials(this.service);
-    return credentials.map((cred) => cred.account);
-  }
+  return {
+    async get(k) { const s = readStore(); return s[k] ?? null; },
+    async set(k, v) { const s = readStore(); s[k] = v; writeStore(s); }
+  };
 }
 
-class VaultSecretsProvider implements SecretsProvider {
-  constructor(_service?: string, _account?: string) {}
-
-  async getSecret(key: string): Promise<string | null> {
-    throw new Error(
-      `HashiCorp Vault provider is not configured. Set SECRET_PROVIDER=local or implement Vault integration (missing secret: ${key}).`
-    );
-  }
-
-  async setSecret(key: string, _value: string): Promise<void> {
-    throw new Error(
-      `HashiCorp Vault provider is not implemented. Unable to set secret ${key}.`
-    );
-  }
-
-  async deleteSecret(key: string): Promise<boolean> {
-    throw new Error(
-      `HashiCorp Vault provider is not implemented. Unable to delete secret ${key}.`
-    );
-  }
-
-  async listKeys(): Promise<string[]> {
-    throw new Error('HashiCorp Vault provider does not support listing secrets via CLI yet.');
-  }
-}
-
-class OnePasswordSecretsProvider implements SecretsProvider {
-  constructor(_service?: string, _account?: string) {}
-
-  async getSecret(key: string): Promise<string | null> {
-    throw new Error(
-      `1Password provider is not configured. Set SECRET_PROVIDER=local or implement 1Password integration (missing secret: ${key}).`
-    );
-  }
-
-  async setSecret(key: string, _value: string): Promise<void> {
-    throw new Error(`1Password provider is not implemented. Unable to set secret ${key}.`);
-  }
-
-  async deleteSecret(key: string): Promise<boolean> {
-    throw new Error(`1Password provider is not implemented. Unable to delete secret ${key}.`);
-  }
-
-  async listKeys(): Promise<string[]> {
-    throw new Error('1Password provider does not support listing secrets via CLI yet.');
-  }
-}
-
-interface SecretsProviderOptions {
-  service?: string;
-  accountPrefix?: string;
-}
-
-export function createSecretsProvider(options: SecretsProviderOptions = {}): SecretsProvider {
-  const { secrets } = getConfig();
-
-  switch (secrets.provider) {
-    case 'local': {
-      const service = options.service ?? secrets.service ?? 'snipebt';
-      const accountPrefix = options.accountPrefix ?? secrets.account;
-      return new KeytarSecretsProvider(service, accountPrefix);
-    }
-    case 'vault':
-      return new VaultSecretsProvider(secrets.service, secrets.account);
-    case '1password':
-      return new OnePasswordSecretsProvider(secrets.service, secrets.account);
-    default:
-      throw new Error(`Unsupported secret provider configured: ${secrets.provider}`);
+export function getSecretsProvider(dataDir = "./data"): SecretsProvider {
+  try {
+    // optional: lazy import to avoid hard dependency
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const keytar = require("keytar") as typeof import("keytar");
+    return {
+      async get(key) { return (await keytar.getPassword("SnipeBT", key)) ?? null; },
+      async set(key, value) { await keytar.setPassword("SnipeBT", key, value); }
+    };
+  } catch {
+    return createFileProvider(dataDir);
   }
 }
