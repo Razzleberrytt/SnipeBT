@@ -62,6 +62,23 @@ will terminate if configuration is invalid.
 | `SECRET_SERVICE` | Conditional | Required when using Vault or 1Password |
 | `SECRET_ACCOUNT` | Conditional | Account identifier for the configured secret backend |
 
+### AI Orchestration (Ollama & CouncilAI)
+
+The runtime can now coordinate decisions across local Ollama models and hosted CouncilAI playbooks. Configure as many providers as you like—warm-up logs during startup will indicate which ones were detected.
+
+| Variable | Description |
+| --- | --- |
+| `OLLAMA_BASE_URL` | Base URL for your Ollama instance (default `http://localhost:11434`) |
+| `OLLAMA_MODEL` | Chat model to load (e.g. `llama3.1`, `qwen2`) |
+| `OLLAMA_KEEP_ALIVE` | Keep-alive window in seconds so the model stays in memory (default `600`) |
+| `COUNCIL_API_KEY` | API key for CouncilAI (required to enable Council integration) |
+| `COUNCIL_BASE_URL` | CouncilAI API root (default `https://api.council.ai`) |
+| `COUNCIL_ROUTE` | Endpoint path for runs (default `/v1/runs`) |
+| `COUNCIL_PLAYBOOK_ID` | Optional playbook identifier to invoke |
+| `AI_REQUEST_TIMEOUT_MS` | Request timeout for provider calls (default `15000`) |
+
+If no providers are configured or reachable, the bot continues operating but prints a warning and skips AI-backed recommendations until connectivity is restored.
+
 ### Secrets management
 
 Secrets default to the local keychain via [`keytar`](https://github.com/atom/node-keytar). Provide
