@@ -79,6 +79,32 @@ The runtime can now coordinate decisions across local Ollama models and hosted C
 
 If no providers are configured or reachable, the bot continues operating but prints a warning and skips AI-backed recommendations until connectivity is restored.
 
+### AI Strategy Layer (Modular Trade Intelligence)
+
+`src/ai/aiTradeIntelligence.ts` orchestrates the EmperorBTC, DCA, Martingale, and Reversal strategy modules in parallel. Outputs are routed through the Jupiter quote helper and optional Telegram notifications; an Ollama-backed LLM layer can refine the final decision with JSON-structured recommendations. All LLM errors fall back to the ensemble result to avoid blocking execution.
+
+| Variable | Description |
+| --- | --- |
+| `AI_STRATEGY_USE_LLM` | Enables the LLM recommendation layer on top of the deterministic ensemble (default `false`). |
+| `AI_STRATEGY_LLM_SYSTEM_PROMPT` | System prompt injected into Ollama when requesting a trade decision (default emphasises JSON-only responses). |
+| `AI_STRATEGY_LLM_TIMEOUT_MS` | Hard timeout (ms) for the LLM orchestration request before falling back to the ensemble result (default `4000`). |
+| `AI_STRATEGY_ENABLE_NOTIFICATIONS` | Whether to emit Telegram notifications for each evaluated trade decision (default `true`). |
+
+```ts
+import { AiTradeIntelligence } from "./ai";
+
+const tradeIntelligence = new AiTradeIntelligence();
+const decision = await tradeIntelligence.evaluate({
+  tokenMint: "So11111111111111111111111111111111111111112",
+  market: { priceUsd: 182.45, priceChange1hPct: -2.1, priceChange24hPct: -5.3 },
+  indicators: { rsi: 34, momentum: -0.4 },
+  portfolio: { basePositionSizeUsd: 250, currentExposureUsd: 500, maxExposureUsd: 1500 },
+  tradeIntent: { side: "BUY", inputMint: "So11111111111111111111111111111111111111112", outputMint: "TokenMint", amount: 125000000 },
+});
+
+console.log(decision.action, decision.confidence);
+```
+
 ### Secrets management
 
 Secrets default to the local keychain via [`keytar`](https://github.com/atom/node-keytar). Provide

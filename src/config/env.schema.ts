@@ -22,7 +22,13 @@ export const EnvSchema = z.object({
   COUNCIL_BASE_URL: z.string().default("https://api.council.ai"),
   COUNCIL_ROUTE: z.string().default("/v1/runs"),
   COUNCIL_PLAYBOOK_ID: z.string().optional(),
-  AI_REQUEST_TIMEOUT_MS: z.coerce.number().default(15000)
+  AI_REQUEST_TIMEOUT_MS: z.coerce.number().default(15000),
+  AI_STRATEGY_USE_LLM: z.coerce.boolean().default(false),
+  AI_STRATEGY_LLM_SYSTEM_PROMPT: z.string().default(
+    "You are an execution-focused Solana trading assistant. Respond with strict JSON."
+  ),
+  AI_STRATEGY_LLM_TIMEOUT_MS: z.coerce.number().default(4000),
+  AI_STRATEGY_ENABLE_NOTIFICATIONS: z.coerce.boolean().default(true)
 });
 
 export type AppEnv = any; // retains shape even with zod-lite; real zod will infer
